@@ -1,0 +1,145 @@
+{
+  "display_name": "English (US)",
+  "code": "en_us",
+  "app": {
+    "title": "Overlay Control Panel"
+  },
+  "header": {
+    "streak": "STREAK",
+    "global": "GLOBAL",
+    "per_character": "PER CHARACTER"
+  },
+  "role": {
+    "killer_short": "K",
+    "survivor_short": "S",
+    "killer": "KILLER",
+    "survivor": "SURVIVOR"
+  },
+  "picker": {
+    "killer_label": "KILLER",
+    "survivor_label": "SURVIVOR",
+    "update_tooltip_killer": "Update killer list",
+    "update_tooltip_survivor": "Update survivor list"
+  },
+  "stats": {
+    "current": "CURRENT",
+    "personal_best": "PERSONAL BEST",
+    "world_record": "WORLD RECORD"
+  },
+  "buttons": {
+    "plus_one_win": "+1  WIN",
+    "reset_streak": "RESET STREAK",
+    "reset_this_pb": "RESET THIS PB",
+    "reset_all_pbs": "RESET ALL PBs",
+    "quit": "QUIT"
+  },
+  "background": {
+    "title": "OVERLAY BACKGROUND",
+    "color_picker_title": "Overlay background color"
+  },
+  "obs": {
+    "title": "ADD TO OBS",
+    "copy": "COPY",
+    "open": "PREVIEW",
+    "copied": "COPIED!",
+    "step1": "1. In OBS add Browser Source",
+    "step2": "2. Click the copy button next to the url and paste it into the OBS Browser Source",
+    "step3": "3. Set width to 1600px and height to 600px"
+  },
+  "status": {
+    "ready": "Ready."
+  },
+  "dialogs": {
+    "reset_pb_title": "Reset Personal Best",
+    "reset_pb_message": "Reset {target}'s personal best to 0?",
+    "reset_all_pbs_title": "Reset All Personal Bests",
+    "reset_all_pbs_message_global": "Reset the global personal best and every killer and survivor's personal best to 0?",
+    "reset_all_pbs_message_role": "Reset every {role}'s personal best to 0?"
+  },
+  "status_messages": {
+    "streak_mode_global": "Streak mode: GLOBAL",
+    "streak_mode_per_character": "Streak mode: PER CHARACTER",
+    "streak_mode_template": "Streak mode: {mode}",
+    "new_pb": "NEW PERSONAL BEST {value}!",
+    "streak_now_global": "Streak is now {value}.",
+    "streak_now_character": "{name} streak is now {value}.",
+    "reset_global_streak": "Reset global streak to 0.",
+    "reset_character_streak": "Reset {name} streak to 0.",
+    "world_record_set": "World record for {name} set to {value}.",
+    "global_streak_set": "Global streak set to {value}.",
+    "character_streak_set": "{name} streak set to {value}.",
+    "global_pb_set": "Global personal best set to {value}.",
+    "character_pb_set": "{name} personal best set to {value}.",
+    "reset_pb_done": "Reset {target}'s personal best to 0.",
+    "reset_all_pbs_done_global": "Reset all personal bests to 0.",
+    "reset_all_pbs_done_role": "Reset all {role} personal bests to 0.",
+    "update_complete": "Update complete: added {count} new {label}.",
+    "no_new_found": "No new {label} found.",
+    "update_failed": "Update failed: {error}",
+    "first_time_setup": "First time setup, please wait..."
+  },
+  "tooltips": {
+    "role_killer": "Switch to killer",
+    "role_survivor": "Switch to survivor",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "about": {
+    "title": "About",
+    "check_updates": "Check for Updates",
+    "credits": "Credits",
+    "version": "Version",
+    "checking": "Checking...",
+    "no_updates": "No updates found",
+    "downloading": "Downloading...",
+    "update_failed": "Update failed",
+    "launching": "Launching...",
+    "restarting": "Restarting...",
+    "current_version": "Current",
+    "found_version": "Found"
+  },
+  "updater": {
+    "checking_killers": "Checking the wiki for new killers",
+    "checking_survivors": "Checking the wiki for new survivors",
+    "new_killers_found": "{count} new killers found",
+    "no_new_killers": "No new killers found.",
+    "new_survivors_found": "{count} new survivors found",
+    "no_new_survivors": "No new survivors found.",
+    "downloading_image": "Downloading image for {name}",
+    "entering_records": "Entering {count} into record lists",
+    "update_finished": "Update finished.",
+    "no_killers_found_error": "No killers found on the wiki page.",
+    "no_survivors_found_error": "No survivors found on the wiki page.",
+    "could_not_download": "Could not download {name}: {error}"
+  },
+  "overlay": {
+    "now_playing": "NOW PLAYING",
+    "current": "CURRENT",
+    "pb": "PB",
+    "wr": "WR",
+    "default_character": "Unselected"
+  },
+  "misc": {
+    "global_streak": "global streak",
+    "killers": "killers",
+    "survivors": "survivors",
+    "killer": "killer",
+    "survivor": "survivor"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "themes": "Theme",
+    "overlay_accent": "Overlay accent color",
+    "choose_color": "Choose overlay accent color",
+    "advanced": "Advanced",
+    "overlay_port": "Overlay Port",
+    "show_status_messages": "Show status messages",
+    "show_status_desc": "Show debug messages at the bottom when changes are made",
+    "port_invalid": "Port must be between 1024 and 65535",
+    "port_hint": "Requires restart to apply",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close"
+  }
+}

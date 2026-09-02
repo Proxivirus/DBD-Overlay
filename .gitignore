@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+*.egg
+venv/
+.venv/
+env/
+.env
+.idea/
+.vscode/
+*.code-workspace
+
+# PyInstaller
+build/
+dist/
+*.manifest
+*.spec
+*.work/
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+
+# App data (but keep defaults)
+*.exe
+!icon/icon.ico
+
+# Keep assets but ignore icons so I dont get sued
+# killer_icons and survivor_icons are downloaded during runtime
+assets/killer_icons/
+assets/survivor_icons/
+
+# Temp from updater
+Temp/

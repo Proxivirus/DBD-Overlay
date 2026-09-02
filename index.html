@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DBD Streak Overlay</title>
+<style>
+  *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}
+  body{font-family:Arial,Helvetica,sans-serif;color:#f4f4f4}
+  #overlay{position:relative;width:1600px;height:600px;background:transparent}
+  #bg{position:absolute;left:0;top:0;width:100%;height:100%;background:#000000;opacity:0}
+  .character{position:absolute;left:0;bottom:0;width:610px;height:590px;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))}
+  .content{position:absolute;left:600px;right:35px;top:48px;bottom:42px}
+  .header{height:78px;display:flex;align-items:center;gap:18px;border-bottom:3px solid rgba(235,235,235,.45);padding-left:25px}
+  .now{font-size:30px;letter-spacing:7px;font-weight:500}
+  .bar{width:5px;height:45px;background:#d10f16;box-shadow:0 0 14px rgba(209,15,22,.65)}
+  .name{font-size:39px;letter-spacing:2px;font-weight:800;font-style:italic;text-shadow:0 2px 6px #000;white-space:nowrap}
+  .stats{display:grid;grid-template-columns:1.1fr 1px 1.2fr;height:calc(100% - 78px);padding-top:35px}
+  .current{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:10px;border-left:1px solid rgba(245,245,245,.7);border-right:1px solid rgba(245,245,245,.0)}
+  .current .number{font-size:210px;line-height:.82;font-weight:500;text-shadow:0 8px 20px rgba(0,0,0,.45)}
+  .current .label{margin-top:25px;font-size:26px;letter-spacing:8px}
+  .divider{background:rgba(245,245,245,.75);margin:15px 0}
+  .records{padding-left:50px;display:flex;flex-direction:column;justify-content:center;gap:55px}
+  .record{display:grid;grid-template-columns:80px 1fr 70px;align-items:end;position:relative;padding-bottom:14px}
+  .record:after{content:"";position:absolute;left:95px;right:0;bottom:0;height:2px;background:rgba(235,235,235,.65)}
+  .icon{width:58px;height:58px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 8px rgba(0,0,0,.35))}.icon .emoji{font-size:50px;line-height:1;display:block}
+  .value{font-size:92px;line-height:.82;font-weight:800;text-shadow:0 5px 10px rgba(0,0,0,.35)}
+  .tag{font-size:26px;letter-spacing:3px;padding-bottom:9px}
+  .brush{position:absolute;right:0;top:0;width:53%;height:10px;background:#d10f16;transform:skewX(-24deg);opacity:.95;filter:drop-shadow(0 4px 2px rgba(209,15,22,.2))}
+</style>
+</head>
+<body>
+<div id="overlay">
+  <div id="bg"></div>
+  <img id="characterImage" class="character" src="assets/unselected_character.png" alt="">
+  <div class="content">
+    <div class="brush"></div>
+    <div class="header">
+      <span class="now">NOW PLAYING</span>
+      <span class="bar"></span>
+      <span id="characterName" class="name">UNSELECTED</span>
+    </div>
+    <div class="stats">
+      <section class="current">
+        <div id="current" class="number">0</div>
+        <div class="label">CURRENT</div>
+      </section>
+      <div class="divider"></div>
+      <section class="records">
+        <div class="record">
+          <div class="icon"><span class="emoji" role="img" aria-label="Trophy">🏆</span></div>
+          <div id="pb" class="value">0</div>
+          <div class="tag">PB</div>
+        </div>
+        <div class="record">
+          <div class="icon"><span class="emoji" role="img" aria-label="Globe with meridians">🌐</span></div>
+          <div id="wr" class="value">0</div>
+          <div class="tag">WR</div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+// Overlay translations get loaded from assets/translations
+const DEFAULT={character:'UNSELECTED',current:0,personalBest:0,worldRecord:null,characterImage:'assets/unselected_character.png',pollMilliseconds:500,overlayBackgroundColor:'#000000',overlayBackgroundOpacity:0,overlayAccentColor:'#d10f16'};
+let last='';
+let currentLang = 'en_us';
+
+function applyOverlayTranslations(data){
+  if(!data || typeof data !== 'object') return;
+  const o = data.overlay || data;
+  const nowEl = document.querySelector('.now');
+  const curLabel = document.querySelector('.current .label');
+  const tags = document.querySelectorAll('.tag');
+  if(o.now_playing && nowEl) nowEl.textContent = String(o.now_playing);
+  if(o.current && curLabel) curLabel.textContent = String(o.current);
+  if(tags[0] && o.pb) tags[0].textContent = String(o.pb);
+  if(tags[1] && o.wr) tags[1].textContent = String(o.wr);
+  if(o.default_character) DEFAULT.character = String(o.default_character);
+}
+
+async function fetchTranslation(lang){
+  // L07: case-insensitive handling - try multiple case variants
+  const base = String(lang||'en_us').trim();
+  if(!base) return null;
+  const candidates = [base, base.toLowerCase(), base.toUpperCase()];
+  const seen = new Set();
+  const uniq = [];
+  for(const c of candidates){ if(!seen.has(c)){ seen.add(c); uniq.push(c); } }
+  for(const cand of uniq){
+    for(const ext of [cand + '.json', cand + '.JSON']){
+      const url = `assets/translations/${ext}`;
+      try{
+        const r = await fetch(url + `?t=${Date.now()}`, {cache:'no-store'});
+        if(r.ok){
+          return await r.json();
+        }
+      }catch(e){}
+    }
+  }
+  return null;
+}
+
+async function loadLanguage(lang){
+  if(!lang) lang = 'en_us';
+  lang = String(lang).trim() || 'en_us';
+  if(lang === currentLang) return;
+  const data = await fetchTranslation(lang);
+  if(data){
+    applyOverlayTranslations(data);
+    currentLang = lang;
+  }
+}
+
+// Prime with default language
+fetchTranslation('en_us').then(data => {
+  if(data){
+    applyOverlayTranslations(data);
+    // Keep currentLang as en_us (already)
+  }
+});
+
+let pollMs = DEFAULT.pollMilliseconds;
+async function previewOpacity(fallback){
+  try{
+    const r=await fetch('opacity_preview.txt?t='+Date.now(),{cache:'no-store'});
+    if(r.ok){
+      const value=Number((await r.text()).trim());
+      if(Number.isFinite(value)) return Math.max(0,Math.min(100,value));
+    }
+  }catch(e){}
+  return fallback;
+}
+async function update(){
+  try{
+    const r=await fetch('config.json?t='+Date.now(),{cache:'no-store'});
+    const c={...DEFAULT,...await r.json()};
+    // Adapt polling interval from config (25ms is used while opacity is dragged)
+    if(typeof c.pollMilliseconds === 'number' && isFinite(c.pollMilliseconds)){
+      pollMs = Math.max(25, Math.min(5000, Math.round(c.pollMilliseconds)));
+    } else {
+      pollMs = DEFAULT.pollMilliseconds;
+    }
+    // Language switch requested via config.json -> {language: "en_us"} (future settings UI)
+    const lang = c.language || c.locale;
+    if(lang && String(lang).trim() && String(lang).trim().toLowerCase() !== currentLang.toLowerCase()){
+      const reqLang = String(lang).trim();
+      const data = await fetchTranslation(reqLang) || await fetchTranslation(reqLang.toLowerCase());
+      if(data){
+        applyOverlayTranslations(data);
+        currentLang = reqLang;
+      }
+    }
+    const serialized=JSON.stringify(c);
+    if(serialized===last){
+      // Still schedule next poll even if no change
+    } else {
+      last=serialized;
+      document.getElementById('characterName').textContent=String(c.character);
+      document.getElementById('current').textContent=String(c.current);
+      document.getElementById('pb').textContent=String(c.personalBest);
+      document.getElementById('wr').textContent=(c.worldRecord==null?'?':String(c.worldRecord));
+      const img=document.getElementById('characterImage');
+      const src=String(c.characterImage||'').trim();
+      if(src){ const next=src+'?t='+Date.now(); if(!img.src.endsWith(next)) img.src=next; img.style.display=''; }
+      else{ img.style.display='none'; }
+      const accent=String(c.overlayAccentColor||DEFAULT.overlayAccentColor);
+      if(/^#[0-9a-fA-F]{6}$/.test(accent)){
+        document.querySelector('.bar').style.background=accent;
+        document.querySelector('.brush').style.background=accent;
+      }
+    }
+    // This is intentionally outside the serialized-config guard.  During an
+    // opacity drag only opacity_preview.txt changes, not config.json.
+    const bg=document.getElementById('bg');
+    bg.style.background=String(c.overlayBackgroundColor||'#000000');
+    const configuredOpacity=typeof c.overlayBackgroundOpacity==='number'?c.overlayBackgroundOpacity:0;
+    const op=await previewOpacity(configuredOpacity);
+    bg.style.opacity=String(Math.max(0,Math.min(1,op/100)));
+  }catch(e){
+    // Keep pollMs on error
+  } finally {
+    setTimeout(update, pollMs);
+  }
+}
+update();
+</script>
+</body>
+</html>

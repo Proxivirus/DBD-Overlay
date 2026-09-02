@@ -1,0 +1,16 @@
+{
+  "character": "",
+  "current": 0,
+  "personalBest": 0,
+  "worldRecord": null,
+  "characterImage": "",
+  "pollMilliseconds": 500,
+  "overlayBackgroundColor": "#000000",
+  "overlayBackgroundOpacity": 0,
+  "streakMode": "character",
+  "lastKiller": "",
+  "lastSurvivor": "",
+  "language": "en_us",
+  "overlayPort": 8765,
+  "showStatusMessages": false
+}
