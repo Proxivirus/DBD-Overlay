@@ -387,7 +387,7 @@ class OverlayController:
         self.write_config()
 
     def set_streak_mode(self, mode: str) -> None:
-        # global = one streak across all killers (for tourney), per-character is default
+        # global is one streak across all characters, per-character is default
         if mode not in ("global", "character"):
             raise ValueError(f"Unknown streak mode: {mode}")
         self.streak_mode = mode
