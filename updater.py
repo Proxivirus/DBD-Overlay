@@ -98,8 +98,6 @@ def fetch_latest_release(repo=GITHUB_REPO):
 
 
 def is_newer_version(current, latest):
-    # its probably fine just to check if current version != latest version
-    # this surely wont come back to bite me in the ass later
     c = current.strip()
     l = latest.strip()
     if not l:
@@ -108,7 +106,30 @@ def is_newer_version(current, latest):
         return True
     if c == l:
         return False
-    return True
+    def _parse(v):
+        v = v.strip().lstrip('vV')
+        parts = []
+        for part in v.split('.'):
+            num = ''
+            for ch in part:
+                if ch.isdigit():
+                    num += ch
+                else:
+                    break
+            try:
+                parts.append(int(num) if num else 0)
+            except Exception:
+                parts.append(0)
+        return parts
+    try:
+        cp = _parse(c)
+        lp = _parse(l)
+        maxlen = max(len(cp), len(lp))
+        cp += [0] * (maxlen - len(cp))
+        lp += [0] * (maxlen - len(lp))
+        return lp > cp
+    except Exception:
+        return l != c
 
 
 def check_for_updates(current_version=None, repo=GITHUB_REPO, status_cb=None):
@@ -213,9 +234,7 @@ def download_file(url, dest, status_cb=None):
 
 
 def prepare_update(release_info, handler_release_info=None, status_cb=None, progress_cb=None):
-    # downloads to Temp writes location.txt returns Temp path or None
-    temp_dir = _get_temp_dir(
-    # clean old Temp files first
+    temp_dir = _get_temp_dir()
     try:
         if temp_dir.is_dir():
             for p in list(temp_dir.iterdir()):
@@ -256,8 +275,14 @@ def prepare_update(release_info, handler_release_info=None, status_cb=None, prog
     h_info = handler_release_info or release_info
     handler_url = _find_asset_url(h_info, HANDLER_ASSET_NAMES)
     if not handler_url and h_info is not release_info:
-        # try main release for handler too
         handler_url = _find_asset_url(release_info, HANDLER_ASSET_NAMES)
+    if not handler_url:
+        try:
+            hr = fetch_latest_release(HANDLER_REPO)
+            if hr:
+                handler_url = _find_asset_url(hr, HANDLER_ASSET_NAMES)
+        except Exception:
+            pass
 
     # grab main exe
     main_dest = temp_dir / "dbd_overlay.exe"
