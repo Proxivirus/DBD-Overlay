@@ -7,7 +7,7 @@ Tracks streaks to show on OBS
 1. Download `dbd_overlay.exe` from [Releases](https://github.com/Proxivirus/DBD-Overlay/releases)
 2. Double-click to open
 3. Follow instructions at bottom to add to OBS
-4. Check wiki for more info
+4. Check [wiki](https://github.com/Proxivirus/DBD-Overlay/wiki) for more info
 
 ## Compile from source
 
